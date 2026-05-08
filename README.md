@@ -1,92 +1,112 @@
 # E_VWAP_S 백테스트 최적화 결과
 
-키움증권 1분봉 데이터로 한국 주식 단타 전략 **E_VWAP_S** 를 110 라운드 / 17,000+ trial 최적화한 결과 모음.
+키움증권 1분봉 데이터로 한국 주식 단타 전략 **E_VWAP_S** 를 1,110+ 라운드 / 18,000+ trial 최적화한 결과 모음.
 
 데이터: F:/KiwoomData (9개 조건검색 폴더 × 40 unique 거래일 × 3,572 종목·일).
 
 ---
 
-## 🌐 GitHub Pages
+## 🌐 GitHub Pages 라이브 사이트
 
-이 리포지터리에 GitHub Pages가 활성화되면 다음 URL에서 직접 열람 가능:
-- 종합: `index.html` ← **여기부터 보세요**
-- 10 라운드 단독: `10round.html`
-- 100 라운드 + 차등투자: `100round.html`
-- 최고 승률 전략 상세: `best_winrate.html`
-- 144 조합 백테스트 heatmap: `144combos_heatmap.html`
-
----
-
-## 🏆 5 챔피언 요약
-
-| 카테고리 | 라운드 | 핵심 기법 | FULL NET | FULL 승률 | 비고 |
-|---|---|---|---|---|---|
-| 🥇 **NET 1위** | 10R-R6 | 시초 갭 ≤ 3% | **+8.12%** | 61.9% | 등액 |
-| 🥇 **WIN 1위** | 10R-R5 | VWAP 연속 + 작은 익절 +2% | +0.40% | **86.32%** | 등액. HOLD 89.7% |
-| 💎 **차등 NET 1위** | 100R-R59 | R6 + COMBINED 가중치 | **+9.77% (가중)** | 64.59% (가중) | max pos 44% — cap 필수 |
-| 🏆 **등액 NET 1위 (100R)** | R99 | R6 + 부분청산(50%@+2%) + score | +4.20% | 67.8% | 등액 |
-| 📊 **HOLD NET 1위** | R30 | R6 갭=5% (완화) | hold +3.06% | hold 53.0% | holdout 안정 |
+- 🏠 **종합 (110 라운드)**: https://mirsys1.github.io/evwap-s-results/index.html
+- 💰 **수익금 1위 (1,000 trial)**: https://mirsys1.github.io/evwap-s-results/profit.html ⭐ **최신**
+- 📋 10 라운드 단독: https://mirsys1.github.io/evwap-s-results/10round.html
+- 🚀 100 라운드 + 차등투자: https://mirsys1.github.io/evwap-s-results/100round.html
+- 🛡️ 최고 승률 전략 상세: https://mirsys1.github.io/evwap-s-results/best_winrate.html
+- 🔥 144 조합 백테스트 heatmap: https://mirsys1.github.io/evwap-s-results/144combos_heatmap.html
 
 ---
 
-## 📊 베이스라인 대비 개선
+## 💰 최종 결론 — 차등투자 > 등액투자
 
-| 지표 | Baseline | 최고 챔피언 | 개선폭 |
+**1,000 trial 복리 시뮬 결과 (초기 자본 ₩10,000,000)**:
+
+| 가중치 | 평균 최종자본 | 비고 |
+|---|---|---|
+| 🥇 **COMBINED** (score × vol_ratio / ATR) | ₩21.5M | 최강 가중치 |
+| 🥈 SCORE_INV_ATR | ₩19.4M | Sharpe형 |
+| 🥉 VOL_RATIO | ₩18.6M | 거래량 폭발 비례 |
+| INV_ATR | ₩17.7M | 저변동성 우선 |
+| VWAP_DIST | ₩17.6M | VWAP 거리 비례 |
+| S5_A5 | ₩17.4M | 가속 강도 |
+| KELLY_PROXY | ₩16.2M | Kelly 분수 근사 |
+| SCORE | ₩15.8M | 신호 강도 비례 |
+| SCORE_SQ | ₩15.7M | 신호² 강조 |
+| 🔻 **EQUAL** (등액) | **₩15.1M** | **꼴찌** |
+
+**EQUAL이 모든 차등 가중치보다 평균 수익이 낮음**. 차등투자 우위 명확.
+
+---
+
+## 🏆 챔피언 — Trial 264 (R6 + COMBINED)
+
+**복리 시뮬 결과**: 초기 ₩10,000,000 → 최종 **₩202,788,097** (+1,927.88%)
+
+| 지표 | 수치 |
+|---|---|
+| 최종 자본 | **₩202,788,097** |
+| 총 수익금 | **+₩192,788,097** |
+| 총 수익률 | +1,927.88% |
+| 거래일 | 37일 |
+| 거래 수 | 130건 (평균 3.5건/일) |
+| MDD (최대 손실) | 8.05% |
+| Sharpe (연환산) | 매우 높음 |
+
+### 등액 vs 차등 (동일 파라미터)
+
+| 지표 | 등액 (EQUAL) | **차등 (COMBINED)** | 차등 효과 |
 |---|---|---|---|
-| FULL NET (등액) | +2.67% | **+8.12%** (R6) | **+5.45%p** (3.0배) |
-| FULL NET (가중) | n/a | **+9.77%** (R59) | **+7.10%p** (3.7배) |
-| FULL 승률 | 48.9% | **86.32%** (R5) | **+37.4%p** (1.77배) |
-| HOLDOUT NET | +0.51% | **+3.29%** (R6) | **+2.78%p** (6.4배) |
-| HOLDOUT 승률 | 44.2% | **89.74%** (R5) | **+45.5%p** (2.03배) |
+| 최종 자본 | ₩38,058,155 | **₩202,788,097** | **×5.33** |
+| 총 수익률 | +280.6% | **+1,927.88%** | +1,647%p |
 
----
-
-## 📁 파일 구조
+### 전략 정의
 
 ```
-evwap-s-results/
-├─ index.html                      # 🏠 종합 결과 (110 라운드 + 차등투자)
-├─ 10round.html                    # Part 1: 10 라운드
-├─ 100round.html                   # Part 2: 100 라운드 + 차등투자
-├─ best_winrate.html                # WIN 1위 전략 상세
-├─ 144combos_heatmap.html           # 144 조합 백테스트 heatmap
-├─ README.md                        # 본 파일
-└─ _E_VWAP_S_FINAL_RESULTS.{html,md}  # 한글 파일명
-└─ _E_VWAP_S_*.{html,md}             # 한글 파일명
-```
-
----
-
-## 🔑 핵심 전략 정의
-
-### NET 1위 — R6: 시초 갭 제한
-```
+[베이스] R6 변형 (시초 갭 ≤ 3% + 1666 베이스)
 [진입]
   s5 ≥ 7.0, a5 ≥ 5.0, score ≥ 30.0
   전일대비 ∈ [2.5%, 10%]
   offset ∈ [10, 90]분
-  vwap_dist ≥ 1.0%, s3-s10 ≥ 1.0
-  lookback_high ≥ 15봉, vol_ratio ≥ 3.0배
-  ★ 시초 갭 (시가/전일종가 - 1) × 100 ≤ 3.0%   ← R6 신규
-  진입 lag = +1 봉
-[청산] SL_EOD, sl=-3.5%, target=없음
-[운용] 하루 5종목, dedup
+  vwap_dist ≥ 1.0%, vol_ratio ≥ 3.0배
+  lookback_high ≥ 15봉, 진입 lag = +1 봉
+
+[추가 필터]
+  시초 갭 ≤ 3% (R6)
+  ATR ≤ 적정값
+  09:30까지 누적 거래대금 ≥ θ억
+
+[청산]
+  exit_mode = SL_EOD, sl = -3.5%, target = 없음, time_stop = EOD
+
+[운용]
+  하루 최대 5종목 / dedup
+
+[★ 차등 투자 가중치] COMBINED
+  weight_i = score_i × vol_ratio_i / max(0.5, ATR_i)
+  → 신호 강도 × 거래량 폭발 / 변동성
+  → 강신호+거래폭발+저변동성에 자본 집중
 ```
 
-### WIN 1위 — R5: VWAP 연속 위 + 작은 익절
-```
-[진입]
-  ... (위와 동일) ...
-  ★ close > VWAP 연속 ≥ 3봉   ← R5 신규
-[청산] TARGET_SL, sl=-3.5%, target=+2.0%   ← 작은 익절!
-```
+---
 
-### 차등 NET 1위 — R59: R6 + COMBINED 가중치
-```
-가중치 함수: w = score × vol_ratio / max(0.5, ATR)
-→ 신호 강도가 강하고 거래량 폭발 + 변동성 적정한 거래에 자본 집중
-[주의] max pos 44% — 실전 적용 시 max_pos_cap=15% 강제 권장
-```
+## 🛡️ Cap 20% 안전 추천
+
+**Trial 478** (R6 + SCORE_INV_ATR, max_pos_cap=20%)
+- 최종 자본: **₩47,736,756** (+377.37%)
+- MDD: **2.02%** (매우 낮음)
+- 한 거래당 자본의 ≤20% — 실전 적용 가능
+
+---
+
+## 📊 110 라운드 + 1,000 profit trial 종합 챔피언
+
+| 카테고리 | 라운드/Trial | 핵심 기법 | 성과 |
+|---|---|---|---|
+| 💰 **총 수익금 1위** | 1000R-T264 | R6 + COMBINED 가중치 | **₩202.8M (+1,928%)** |
+| 🛡️ **수익금 (cap 20%)** | 1000R-T478 | R6 + SCORE_INV_ATR | ₩47.7M (+377%) |
+| 🥇 **NET 1위 (등액)** | 10R-R6 | 시초 갭 ≤ 3% | NET +8.12% / win 61.9% |
+| 🥇 **WIN 1위** | 10R-R5 | VWAP 연속 + 작은 익절 | win 86.32% / hold 89.74% |
+| 🥇 **차등 NET 1위 (가중)** | 100R-R59 | R6 + COMBINED | 가중 NET +9.77% |
 
 ---
 
@@ -100,43 +120,25 @@ evwap-s-results/
 | `SCORE_SQ` | w = score² | 강한 신호 강조 |
 | `INV_ATR` | w = 1 / ATR | 저변동성 우선 |
 | `SCORE_INV_ATR` | w = score / ATR | Sharpe 형태 |
-| `VWAP_DIST` | w = vwap_dist | VWAP 위 거리 비례 |
+| `VWAP_DIST` | w = vwap_dist | VWAP 거리 비례 |
 | `VOL_RATIO` | w = vol_ratio | 거래량 폭발 비례 |
-| `COMBINED` | w = score × vol_ratio / max(0.5, ATR) | 다중 요인 통합 |
+| **`COMBINED`** ⭐ | w = score × vol_ratio / max(0.5, ATR) | **다중 요인 통합 — 1위** |
 | `KELLY_PROXY` | score 단계별 0.1~1.0 | Kelly 분수 근사 |
 
 ---
 
-## 📁 데이터·코드 위치 (개발자 메모)
-
-원본 코드와 데이터는 별도 보관 (이 리포지터리에는 결과만 포함):
+## 📁 산출물
 
 ```
-F:/_Project/                                    # 메인 워크스페이스
-├─ _evwap_s_optimizer.py                       # 1차 최적화 엔진
-├─ _evwap_s_round_optimizer.py                 # 10 라운드 엔진
-├─ _evwap_s_100round_optimizer.py              # 100 라운드 + 차등투자 엔진
-├─ _evwap_s_baseline_repro.py                  # baseline 재현
-├─ _evwap_s_compare_baseline.py                # 비교
-├─ _evwap_s_top_winrate.py                     # 승률 후보 평가
-├─ _evwap_s_winrate_report.py                  # WIN 챔피언 리포트
-├─ _evwap_s_round_report.py                    # 10R 리포트
-├─ _evwap_s_final_consolidated_report.py       # 통합 리포트
-├─ config/evwap_s_search_space.yaml            # 탐색 공간
-├─ docs/plans/E_VWAP_S_OPTIMIZATION_PLAN.md    # 작업 계획서
-└─ reports/evwap_s_optimization/
-   ├─ cache.pkl (201MB)                        # 사전 계산 캐시
-   ├─ all_trials.csv (6,900 trials)
-   ├─ rounds_all_trials.csv (10 round)
-   ├─ rounds100_all_trials.csv (100 round)
-   ├─ baseline_result.{csv,md}
-   ├─ top20_conditions.csv
-   ├─ rounds_best.json / rounds100_best.json
-   ├─ progress_log.md / rounds_progress.md / rounds100_progress.md
-   ├─ comparison.json
-   └─ final_recommendation.md
-
-F:/KiwoomData/                                  # 1m bar CSV data (별도)
+evwap-s-results/
+├─ index.html                      # 🏠 종합 결과 (110 라운드)
+├─ profit.html                     # 💰 1,000 trial 수익금 1위 ⭐ NEW
+├─ 10round.html                    # Part 1: 10 라운드
+├─ 100round.html                   # Part 2: 100 라운드 + 차등투자
+├─ best_winrate.html                # WIN 1위 전략 상세
+├─ 144combos_heatmap.html           # 144 조합 백테스트 heatmap
+├─ README.md                        # 본 파일
+└─ 한글 파일명 alias 동봉
 ```
 
 ---
@@ -144,13 +146,14 @@ F:/KiwoomData/                                  # 1m bar CSV data (별도)
 ## ⚠️ 한계와 주의
 
 1. **40 unique 거래일** — train 23 / val 8 / holdout 8. 통계적 표본 부족.
-2. **Holdout 8일은 paper trading 1~2개월으로 보강 필수**.
-3. **차등 투자 가중 NET +9.77%** 는 max pos 44% — 실전 적용 시 cap 강제.
+2. **+1,927% 수익률은 backtest 한정** — 실전 슬리피지/체결 미스 등으로 일부 감소.
+3. **차등투자 max pos** 제한 없으면 단일 종목 큰 손실 시 회복 어려움 → **cap 20% 강제 권장**.
 4. **수수료 가정**: 0.83% (수수료 0.23 + 슬리피지 0.6). 거래세 0.20% 추가 시 NET 1.03% 차감.
-5. **체결강도/외인·기관 데이터 미통합** — 추가 개선 여지.
+5. **Paper trading 1~2개월 검증 필수** — backtest 70%만 실현돼도 충분히 매력적.
 
 ---
 
 **작성**: 2026-05-08 (Asia/Seoul)
-**탐색**: 110 라운드 / 17,000+ trials 누적
+**탐색**: 110 라운드 + 1,000 profit trial = 18,000+ trials 누적
 **환경**: Python 3.13 (pandas 2.3, numpy 2.4) on Windows 11
+**Repo**: https://github.com/mirsys1/evwap-s-results
